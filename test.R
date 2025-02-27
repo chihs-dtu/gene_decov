@@ -1,4 +1,5 @@
 library(RESET)
+library(AUCell)
 # library(dplyr)
 # library(reticulate)
 
@@ -14,9 +15,24 @@ out_dir <- args[4]
 base_name <- basename(gene_mat_path)
 
 
-read_rds <- function(rds_path){
+read_gep_rds <- function(rds_path){
 
   data <- readRDS(rds_path)
+
+  # Check whether the indices of the matrix are unique
+  # If it is not, sum the values for each gene (row-wise aggregation)
+  if (length(rownames(data)) != length(unique(rownames(data)))){
+    data_sum <- data %>%
+    group_by(Gene) %>%
+    summarise(across(where(is.numeric), \(x) sum(x, na.rm <- TRUE)))
+  }
+  
+  return(data)
+}
+
+read_gep_csv <- function(path){
+
+  data <- read.csv(path, row.names=1)
 
   # Check whether the indices of the matrix are unique
   # If it is not, sum the values for each gene (row-wise aggregation)
@@ -130,9 +146,14 @@ run_ssgsea <- function(X, gene_sets, alpha = 0.25, scale = T, norm = F,
   # saveRDS(es, file = out_file)
 }
 
+run_aucell <- function(X, gene_sets, out_file = ""){
+  sample_AUC <- AUCell_run(X, geneSets) # Add BPPARAM=BiocParallel::MulticoreParam(5) to run in parallel (number of cores=5)
+
+}
+
 
 #gene_mat <- read_gct(gct_path)
-gene_mat <- read_rds(gene_mat_path)
+gene_mat <- read_gep_csv(gene_mat_path)
 print("Loaded gene matrix")
 gene_sets <- fgsea::gmtPathways(gmt_path)
 print("Loaded gmt_path")
@@ -142,4 +163,5 @@ print(out_file)
 res <- switch(tool_name,
         "ssgsea" = run_ssgsea(gene_mat, gene_sets, scale = F, norm = T, 
                               out_file = out_file),
-        "reset" = run_reset(gene_mat, gene_sets, out_file))
+        "reset" = run_reset(gene_mat, gene_sets, out_file),
+        "aucell" = run_aucell(gene_mat, gene_sets, out_file))

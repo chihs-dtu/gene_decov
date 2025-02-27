@@ -17,7 +17,7 @@ for n_sample in 100 1000 10000 100000; do
 	echo "-------------------------------------------------------"
 	echo "Testing with ${n_sample} samples..."
     echo "-------------------------------------------------------"
-	MAT_PATH="/Users/chiaoyuhsieh//Downloads/data/subsetted_data_${n_sample}.rds"
+	MAT_PATH="/Users/chiaoyuhsieh//Downloads/data/subsetted_data_${n_sample}.csv"
 	for TOOL in ssgsea reset; do
 		echo "    Testing ${TOOL}..."
 		#/usr/bin/time -v \

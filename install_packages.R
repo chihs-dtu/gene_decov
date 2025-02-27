@@ -1,7 +1,7 @@
 # Define a vector with the required package names
 required_packages <- c("ggplot2", "dplyr", "tidyr", "RESET", "reticulate", 
                        "pryr")
-bio_pacages <- c("fgsea")
+bio_pacages <- c("fgsea", "AUCell", "doMC", "doRNG", "doSNOW")
 # Function to check and install packages
 install_packages <- function(packages) {
   # Loop through each package in the list
